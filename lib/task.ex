@@ -11,8 +11,11 @@ defmodule ImageFinder.Task do
     {:ok, state}
   end
 
-  def handle_cast(:start, state) do
-    IO.puts "Descargando"
-    {:noreply, state}
+  def handle_cast(:start, {link, folder, worker} = state) do
+    IO.puts "descargando"
+    :timer.sleep(2000)
+    IO.puts "Finalizada descarga"
+    GenServer.cast(worker, :ready)
+    {:stop, :normal, state}
   end
 end

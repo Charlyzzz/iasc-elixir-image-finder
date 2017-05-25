@@ -1,7 +1,7 @@
 defmodule ImageFinder.WorkerSupervisor do
   use Supervisor
 
-  alias ImageFinder.{Worker, WorkerSupervisor, TaskSupervisor}
+  alias ImageFinder.{Worker, TaskSupervisor}
 
   def start_link do
     Supervisor.start_link(__MODULE__, :ok)
@@ -13,9 +13,9 @@ defmodule ImageFinder.WorkerSupervisor do
 
   def append_new_worker(supervisor) do
     task_supervisor_spec = supervisor(TaskSupervisor, [], child_params())
-    {:ok, supervisor_pid} = Supervisor.start_child(supervisor, task_supervisor_spec)
+    {:ok, task_supervisor} = Supervisor.start_child(supervisor, task_supervisor_spec)
 
-    worker_spec = worker(Worker, [supervisor_pid], child_params())
+    worker_spec = worker(Worker, [task_supervisor, self()], child_params())
     Supervisor.start_child(supervisor, worker_spec)
   end
 
